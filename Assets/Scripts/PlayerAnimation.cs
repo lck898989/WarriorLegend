@@ -57,6 +57,8 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetBool("isCrouch", tag);
     }
 
+
+
     public void attackOver(int attackIndex)
     {
         Debug.LogWarning("attack " + attackIndex + " over");

@@ -9,7 +9,9 @@ public class PlayerController : MonoBehaviour
 {
     public PlayerInput playerInput = null;
 
-    public Vector2 inputDirection;
+    public Vector2 inputDirection = new Vector2(1, 0);
+
+    public Vector2 lastInputDir = new Vector2(1, 0);
 
     public PlayerAnimation playerAnimation;
 
@@ -77,6 +79,10 @@ public class PlayerController : MonoBehaviour
         this.rb.AddForce(bounceForce * new Vector2(1, 0), ForceMode2D.Impulse);
 
         #region 走路事件
+        this.playerInput.GamePlay.Move.started += (InputAction.CallbackContext ctx) =>
+        {
+            Debug.Log("dir is " + inputDirection);
+        };
         // 持续按走路键
         this.playerInput.GamePlay.Walk.performed += (InputAction.CallbackContext ctx) =>
         {
@@ -138,10 +144,12 @@ public class PlayerController : MonoBehaviour
         if (this.inputDirection.x < 0)
         {
             this.transform.localScale = new Vector3(-1, 1, 1);
+            lastInputDir = this.inputDirection;
         }
         else if (this.inputDirection.x > 0)
         {
             this.transform.localScale = new Vector3(1, 1, 1);
+            lastInputDir = this.inputDirection;
         }
 
         if (!this.isCrouch && !isBounce)
