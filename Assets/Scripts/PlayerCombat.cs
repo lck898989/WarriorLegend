@@ -32,7 +32,7 @@ public class PlayerCombat : MonoBehaviour
             // 是否在攻击窗口内
             bool insideComboWindow = (lastAttack != null && (Time.time < (lastAttackTime + lastAttack.duration + lastAttack.comboResetTime)));
 
-            if (insideComboWindow && !continueAttackCombo && attackIndex < attackCombo.Length)
+            if (insideComboWindow && !continueAttackCombo && attackIndex < attackCombo.Length - 1)
             {
                 // 继续攻击
                 attackIndex++;
@@ -42,20 +42,19 @@ public class PlayerCombat : MonoBehaviour
                 // 重置攻击
                 attackIndex = 0;
             }
-            if (attackIndex >= attackCombo.Length)
-            {
-                attackIndex = 0;
-            }
 
             doAttack(attackCombo[attackIndex], UnitState.ATTACK);
 
         }
         if (charactorState.curState == UnitState.ATTACK && !continueAttackCombo && playerController.pc.isGround)
         {
-            // 已经处于攻击状态，且不是连续攻击 将连续攻击状态打开
-            continueAttackCombo = true;
+            if (attackIndex < attackCombo.Length - 1)
+            {
+                // 已经处于攻击状态，且不是连续攻击 将连续攻击状态打开
+                continueAttackCombo = true;
+                return;
+            }
         }
-
     }
 
     public void doAttack(Damage damage, UnitState state)

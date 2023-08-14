@@ -56,4 +56,27 @@ public class PlayerAnimation : MonoBehaviour
     {
         animator.SetBool("isCrouch", tag);
     }
+
+    public void attackOver(int attackIndex)
+    {
+        Debug.LogWarning("attack " + attackIndex + " over");
+        switch (attackIndex)
+        {
+            case 1:
+                animator.ResetTrigger("attack1");
+                break;
+            case 2:
+                animator.ResetTrigger("attack2");
+                break;
+            case 3:
+                animator.ResetTrigger("attack3");
+                break;
+        }
+
+        animator.GetComponent<PlayerController>().isAttack = false;
+        animator.GetComponent<CharactorState>().SetState(UnitState.IDLE);
+        animator.GetComponent<PlayerCombat>().continueAttackCombo = false;
+
+
+    }
 }

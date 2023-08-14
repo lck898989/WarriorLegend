@@ -19,10 +19,11 @@ public class PlayerAttackFinished : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        // animator.GetCurrentAnimatorStateInfo()
-        animator.GetComponent<PlayerController>().isAttack = false;
-        animator.GetComponent<CharactorState>().SetState(UnitState.IDLE);
-        animator.GetComponent<PlayerCombat>().continueAttackCombo = false;
+        // Debug.LogError("PlayerAttackFinished---->>>" + animator);
+        // // animator.GetCurrentAnimatorStateInfo()
+        // animator.GetComponent<PlayerController>().isAttack = false;
+        // animator.GetComponent<CharactorState>().SetState(UnitState.IDLE);
+        // animator.GetComponent<PlayerCombat>().continueAttackCombo = false;
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
