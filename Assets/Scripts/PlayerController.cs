@@ -2,12 +2,16 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor.ShortcutManagement;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
     public PlayerInput playerInput = null;
+
+    public PhysicsMaterial2D wallMaterial;
+    public PhysicsMaterial2D groundMaterial;
 
     public Vector2 inputDirection = new Vector2(1, 0);
 
@@ -47,16 +51,19 @@ public class PlayerController : MonoBehaviour
     public bool isBounce = false;
     public Vector2 bounceDirection = Vector2.zero;
 
-
     [Space(10)]
     [Header("攻击参数")]
     public bool isAttack = false;
     [Tooltip("攻击重置窗口时间")]
     public float attackResetTime = 1f;
 
+    /// <summary>
+    /// 是否受伤
+    /// </summary>
+    public bool isHurt = false;
+
     public void Awake()
     {
-
 
         this.rb = this.GetComponent<Rigidbody2D>();
         this.playerInput = new PlayerInput();
@@ -108,6 +115,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("enemy"))
         {
+            isHurt = true;
             Charactor otherCha = other.GetComponent<Charactor>();
             Debug.Log("碰到了敌人");
             // 英雄受到敌人的伤害
@@ -116,17 +124,24 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("enemy"))
+        {
+            // 重置受伤状态
+            isHurt = false;
+        }
+    }
+
 
     void OnEnable()
     {
         this.playerInput.Enable();
-
     }
 
     void OnDisable()
     {
         this.playerInput.Disable();
-
     }
 
     // Update is called once per frame
@@ -134,26 +149,14 @@ public class PlayerController : MonoBehaviour
     {
         this.inputDirection = this.playerInput.GamePlay.Move.ReadValue<Vector2>();
         InputAction jumpAction = this.playerInput.GamePlay.Jump;
-
     }
 
     void FixedUpdate()
     {
         if (this.isDead) return;
 
-        if (this.inputDirection.x < 0)
-        {
-            this.transform.localScale = new Vector3(-1, 1, 1);
-            lastInputDir = this.inputDirection;
-        }
-        else if (this.inputDirection.x > 0)
-        {
-            this.transform.localScale = new Vector3(1, 1, 1);
-            lastInputDir = this.inputDirection;
-        }
-
-        if (!this.isCrouch && !isBounce)
-            this.rb.velocity = new Vector2(this.inputDirection.x * speed * Time.deltaTime, this.rb.velocity.y);
+        if (!isHurt)
+            Move();
 
         this.isCrouch = this.inputDirection.y < -0.2;
         this.playerAnimation.crouch(this.isCrouch);
@@ -168,16 +171,25 @@ public class PlayerController : MonoBehaviour
             cc2d.offset = this.originOffset;
         }
 
-        if (isBounce)
+        bounceCheck();
+
+    }
+
+    private void Move()
+    {
+        if (this.inputDirection.x < 0)
         {
-            this.rb.velocity = Vector2.zero;
-            Vector2 force = this.bounceDirection * this.bounceForce;
-            Debug.Log("弹开方向：" + force);
-
-            this.rb.AddForce(force, ForceMode2D.Impulse);
-
-            // this.isBounce = false;
+            this.transform.localScale = new Vector3(-1, 1, 1);
+            lastInputDir = this.inputDirection;
         }
+        else if (this.inputDirection.x > 0)
+        {
+            this.transform.localScale = new Vector3(1, 1, 1);
+            lastInputDir = this.inputDirection;
+        }
+
+        if (!this.isCrouch && !isBounce)
+            this.rb.velocity = new Vector2(this.inputDirection.x * speed * Time.deltaTime, this.rb.velocity.y);
     }
 
     private void Jump(InputAction.CallbackContext obj)
@@ -185,8 +197,27 @@ public class PlayerController : MonoBehaviour
         if (this.isDead) return;
         if (isBounce) return;
         if (!pc.isGround) return;
+
+        // 设置物理材质
+        this.rb.sharedMaterial = this.wallMaterial;
         this.rb.AddForce(transform.up * this.jumpForce, ForceMode2D.Impulse);
-        // this.playerAnimation.JumpAction();
+    }
+
+    public void setNormalMaterial()
+    {
+        this.rb.sharedMaterial = this.groundMaterial;
+    }
+
+    private void bounceCheck()
+    {
+        if (isBounce)
+        {
+            this.rb.velocity = Vector2.zero;
+            Vector2 force = this.bounceDirection * this.bounceForce;
+            Debug.Log("弹开方向：" + force);
+
+            this.rb.AddForce(force, ForceMode2D.Impulse);
+        }
     }
 
     /// <summary>

@@ -12,9 +12,12 @@ public class PhysicsCheck : MonoBehaviour
     public Vector2 checkOffset = Vector2.zero;
     public LayerMask layerMask;
 
+    public PlayerController playerController;
+
     void Awake()
     {
         this.rb = this.GetComponent<Rigidbody2D>();
+        playerController = GetComponent<PlayerController>();
         Debug.Log("PhysicsCheck Awake");
     }
 
@@ -30,6 +33,8 @@ public class PhysicsCheck : MonoBehaviour
         if (!isG && this.isGround)
         {
             Debug.Log("落地了");
+            playerController.setNormalMaterial();
+
         }
     }
 
@@ -38,6 +43,7 @@ public class PhysicsCheck : MonoBehaviour
         Collider2D hit = Physics2D.OverlapCircle((Vector2)this.transform.position + checkOffset, checkDistance, this.layerMask);
         if (hit != null)
         {
+
             return true;
         }
         return false;

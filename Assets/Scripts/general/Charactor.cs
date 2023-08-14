@@ -115,7 +115,6 @@ public class Charactor : MonoBehaviour
     public void triggerInvincible()
     {
         this.invincible = true;
-
     }
 
     private void OnDisable()
