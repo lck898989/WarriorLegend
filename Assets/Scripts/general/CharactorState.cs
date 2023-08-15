@@ -6,6 +6,7 @@ using UnityEngine;
 public enum UnitState
 {
     IDLE,
+    WALK,
     JUMP,
     RUN,
     ATTACK,
