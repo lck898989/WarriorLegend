@@ -10,27 +10,42 @@ using UnityEngine;
 /// </summary>
 public class Boar : Enemy
 {
+    /// <summary>
+    /// 猪的攻击范围
+    /// </summary>
+    public float attackDistance = 1f;
 
-
-
-    // Start is called before the first frame update
-    void Start()
+    public override void SetupAllState()
     {
-        base.Start();
-        State = UnitState.IDLE;
-
+        base.SetupAllState();
+        StateMap.Add(UnitState.IDLE, new IdleState(this));
+        StateMap.Add(UnitState.PATROL, new PatrolState(this));
+        StateMap.Add(UnitState.DEAD, new DeadState(this));
+        StateMap.Add(UnitState.ATTACK, new AttackState(this));
+        StateMap.Add(UnitState.HIT, new HitState(this));
     }
 
-
-
-    // Update is called once per frame
-    void Update()
+    public override bool IsInAttackRange()
     {
-        base.Update();
-    }
+        Transform player = GameManager.Instance.legendGame.Player;
+        if (player == null)
+        {
+            player = GameObject.FindGameObjectWithTag("player").transform;
+        }
+        if (Vector2.Distance(player.position, transform.position) > attackDistance)
+        {
+            return false;
+        }
 
-    public override void Move()
-    {
-        base.Move();
+        // 转向
+        if (transform.position.x - player.position.x > 0)
+        {
+            transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+        }
+        if (transform.position.x - player.position.x < 0)
+        {
+            transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+        }
+        return true;
     }
 }

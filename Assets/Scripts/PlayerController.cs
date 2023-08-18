@@ -245,8 +245,6 @@ public class PlayerController : MonoBehaviour
     {
         if (this.isDead) return;
         if (!this.pc.isGround) return;
-
-        Debug.Log("Attack---->>");
         // 处理攻击事件
         playerCombat.combatEvent();
 

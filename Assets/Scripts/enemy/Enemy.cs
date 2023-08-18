@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Windows;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(Animator))]
@@ -12,6 +13,8 @@ public class Enemy : MonoBehaviour
     public bool canWait = false;
     public Vector2 startPoint;
     public Vector2 endPoint;
+
+    public Charactor charactor;
     /// <summary>
     /// 野猪的状态
     /// </summary>
@@ -28,22 +31,28 @@ public class Enemy : MonoBehaviour
                 switch (_State)
                 {
                     case UnitState.IDLE:
-                        animator.SetBool("idle", true);
-                        animator.SetBool("walk", false);
-                        animator.SetBool("run", false);
+                        CurState = StateMap[UnitState.IDLE];
+                        CurState.OnEnterState();
                         break;
-                    case UnitState.WALK:
-                        animator.SetBool("idle", false);
-                        animator.SetBool("walk", true);
-                        animator.SetBool("run", false);
+                    case UnitState.PATROL:
+                        CurState = StateMap[UnitState.PATROL];
+                        CurState.OnEnterState();
                         break;
                     case UnitState.RUN:
-                        animator.SetBool("idle", false);
-                        animator.SetBool("walk", false);
-                        animator.SetBool("run", true);
+                        CurState = StateMap[UnitState.RUN];
+                        CurState.OnEnterState();
                         break;
                     case UnitState.DEAD:
-                        animator.SetBool("dead", true);
+                        CurState = StateMap[UnitState.DEAD];
+                        CurState.OnEnterState();
+                        break;
+                    case UnitState.ATTACK:
+                        CurState = StateMap[UnitState.ATTACK];
+                        CurState.OnEnterState();
+                        break;
+                    case UnitState.HIT:
+                        CurState = StateMap[UnitState.HIT];
+                        CurState.OnEnterState();
                         break;
                     default:
                         break;
@@ -52,9 +61,17 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    protected Rigidbody2D rb;
-    protected Animator animator;
+    /// <summary>
+    /// 状态机map
+    /// </summary>
+    /// <typeparam name="UnitState"></typeparam>
+    /// <typeparam name="BaseState"></typeparam>
+    /// <returns></returns>
+    public Dictionary<UnitState, BaseState> StateMap = new Dictionary<UnitState, BaseState>();
 
+    public BaseState CurState;
+    public Rigidbody2D rb;
+    public Animator animator;
     /// <summary>
     /// 当前野猪的速度
     /// </summary>
@@ -82,7 +99,33 @@ public class Enemy : MonoBehaviour
     /// </summary>
     public bool isWait = false;
 
+    /// <summary>
+    /// 是否被击中
+    /// </summary>
+    public bool isHit = false;
+
+    public Transform player;
+
     // public float dirX = 1;
+
+    void Awake()
+    {
+        charactor = GetComponent<Charactor>();
+        SetupAllState();
+    }
+
+    /// <summary>
+    /// 安装所有状态
+    /// </summary>
+    public virtual void SetupAllState()
+    {
+
+    }
+
+    public virtual bool IsInAttackRange()
+    {
+        return false;
+    }
 
     // Start is called before the first frame update
     public void Start()
@@ -90,39 +133,53 @@ public class Enemy : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         curSpeed = normalSpeed;
+        // 默认进入巡逻状态
+        State = UnitState.PATROL;
+    }
 
-        State = UnitState.WALK;
+    private void OnEnable()
+    {
+        CurState?.OnEnterState();
     }
 
     // Update is called once per frame
     public void Update()
     {
-        if (transform.position.x <= endPoint.x || transform.position.x >= startPoint.x)
+        CommonLogicUpdate();
+        CurState?.OnLogicUpdate();
+    }
+
+    public void CommonLogicUpdate()
+    {
+        Transform trs = transform;
+
+        if (trs.position.x <= endPoint.x || trs.position.x >= startPoint.x)
         {
             if (!isWait)
             {
-                this.isWait = true;
+                isWait = true;
                 if (canWait)
                 {
+                    Debug.LogWarning("巡逻状态碰到边界，等待。。。");
                     State = UnitState.IDLE;
                 }
             }
             // 强制拉回
-            if (transform.position.x <= endPoint.x)
+            if (trs.position.x <= endPoint.x)
             {
                 Debug.Log("到达左边界");
-                transform.position = new Vector2(endPoint.x, transform.position.y);
+                trs.position = new Vector2(endPoint.x, trs.position.y);
             }
             else
             {
                 Debug.Log("到达右边界");
-                transform.position = new Vector2(startPoint.x, transform.position.y);
+                trs.position = new Vector2(startPoint.x, trs.position.y);
             }
             if (!canWait)
             {
                 // 不等的话立刻转向
-                float targetX = -transform.localScale.x;
-                transform.localScale = new Vector3(targetX, transform.localScale.y, transform.localScale.z);
+                float targetX = -trs.localScale.x;
+                trs.localScale = new Vector3(targetX, trs.localScale.y, trs.localScale.z);
             }
         }
         else
@@ -132,8 +189,8 @@ public class Enemy : MonoBehaviour
             {
                 waitTimeCounter = 0;
             }
-            if (State != UnitState.WALK)
-                State = UnitState.WALK;
+            if (State != UnitState.PATROL)
+                State = UnitState.PATROL;
         }
 
         if (canWait && isWait)
@@ -145,21 +202,62 @@ public class Enemy : MonoBehaviour
             {
                 isWait = false;
                 waitTimeCounter = 0;
-                Debug.Log("转向。。" + transform.localScale.x);
+                Debug.Log("转向。。" + trs.localScale.x);
                 // 转向
-                float targetX = -transform.localScale.x;
-                transform.localScale = new Vector3(targetX, transform.localScale.y, transform.localScale.z);
-                State = UnitState.WALK;
+                float targetX = -trs.localScale.x;
+                trs.localScale = new Vector3(targetX, trs.localScale.y, trs.localScale.z);
+                State = UnitState.PATROL;
             }
         }
     }
 
+    public void OnTakeDamage(Transform Attacker)
+    {
+        Debug.Log("野猪受到攻击转向");
+        if (Attacker.position.x - transform.position.x > 0)
+        {
+            transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
+        }
+        else
+        {
+            transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
+        }
+        State = UnitState.HIT;
+        // 野猪弹开一段距离
+        StartCoroutine(OnHit());
+    }
 
+    private IEnumerator OnHit()
+    {
+        yield return new WaitForSeconds(0.8f);
+        isHit = false;
+        // 继续巡逻
+        State = UnitState.PATROL;
+    }
+
+    public void OnDead(Transform Attacker)
+    {
+        State = UnitState.DEAD;
+    }
+
+    public void DeadDestroy()
+    {
+        Destroy(this.gameObject);
+    }
 
     public void FixedUpdate()
     {
+        CommonFixedUpdate();
+        CurState?.OnPhysicsUpdate();
+    }
 
-        Move();
+    public void CommonFixedUpdate()
+    {
+        if (!isHit && !charactor.IsDead)
+        {
+            // 继续巡逻
+            Move();
+        }
     }
 
     public virtual void Move()

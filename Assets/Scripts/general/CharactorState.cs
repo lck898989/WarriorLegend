@@ -9,11 +9,18 @@ public enum UnitState
     WALK,
     JUMP,
     RUN,
+    ///
+    /// 攻击
+    /// 
     ATTACK,
     HIT,
     DEAD,
     STANDUP,
     DEFEND,
+    /// <summary>
+    /// 巡逻
+    /// </summary>
+    PATROL
 }
 
 public class CharactorState : MonoBehaviour
