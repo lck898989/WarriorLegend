@@ -258,6 +258,10 @@ public class Enemy : MonoBehaviour
             // 继续巡逻
             Move();
         }
+        // if (isHit)
+        // {
+        //     rb.AddForce(new Vector2(transform.localScale.x * 2, 0), ForceMode2D.Impulse);
+        // }
     }
 
     public virtual void Move()

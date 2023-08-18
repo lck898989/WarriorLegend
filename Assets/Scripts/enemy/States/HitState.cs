@@ -29,7 +29,7 @@ public class HitState : BaseState
 
     public override void OnPhysicsUpdate()
     {
-        Debug.Log("hit fixed update....");
+        Debug.LogWarning("hit fixed update....");
         if (EnemyIns.isHit)
         {
             EnemyIns.rb.AddForce(new Vector2(EnemyIns.transform.localScale.x * 2, 0), ForceMode2D.Impulse);
