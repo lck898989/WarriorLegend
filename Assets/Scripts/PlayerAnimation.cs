@@ -61,7 +61,6 @@ public class PlayerAnimation : MonoBehaviour
 
     public void attackOver(int attackIndex)
     {
-        Debug.LogWarning("attack " + attackIndex + " over");
         switch (attackIndex)
         {
             case 1:

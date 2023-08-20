@@ -146,6 +146,7 @@ public class Enemy : MonoBehaviour
     public void Update()
     {
         CommonLogicUpdate();
+        Debug.Log("curState is " + CurState);
         CurState?.OnLogicUpdate();
     }
 
@@ -160,19 +161,16 @@ public class Enemy : MonoBehaviour
                 isWait = true;
                 if (canWait)
                 {
-                    Debug.LogWarning("巡逻状态碰到边界，等待。。。");
                     State = UnitState.IDLE;
                 }
             }
             // 强制拉回
             if (trs.position.x <= endPoint.x)
             {
-                Debug.Log("到达左边界");
                 trs.position = new Vector2(endPoint.x, trs.position.y);
             }
             else
             {
-                Debug.Log("到达右边界");
                 trs.position = new Vector2(startPoint.x, trs.position.y);
             }
             if (!canWait)
@@ -195,14 +193,12 @@ public class Enemy : MonoBehaviour
 
         if (canWait && isWait)
         {
-            Debug.Log("waiting...");
             // 等待waitTime之后再转向
             waitTimeCounter += Time.deltaTime;
             if (waitTimeCounter >= waitTime)
             {
                 isWait = false;
                 waitTimeCounter = 0;
-                Debug.Log("转向。。" + trs.localScale.x);
                 // 转向
                 float targetX = -trs.localScale.x;
                 trs.localScale = new Vector3(targetX, trs.localScale.y, trs.localScale.z);
@@ -258,10 +254,6 @@ public class Enemy : MonoBehaviour
             // 继续巡逻
             Move();
         }
-        // if (isHit)
-        // {
-        //     rb.AddForce(new Vector2(transform.localScale.x * 2, 0), ForceMode2D.Impulse);
-        // }
     }
 
     public virtual void Move()

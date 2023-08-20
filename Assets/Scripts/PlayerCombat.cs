@@ -64,7 +64,6 @@ public class PlayerCombat : MonoBehaviour
 
     public void doAttack(Damage damage, UnitState state)
     {
-        Debug.Log("animationTrigger is " + damage.animationTrigger);
         if (damage.animationTrigger == "attack3")
         {
             Debug.Log("attack3");
@@ -80,7 +79,6 @@ public class PlayerCombat : MonoBehaviour
     public void Ready()
     {
 
-        Debug.LogWarning("Ready" + " continuecombo is " + continueAttackCombo);
         if (continueAttackCombo)
         {
             // 重置是否继续连招动作 因为这个时候玩家没有触发攻击动作
@@ -94,7 +92,6 @@ public class PlayerCombat : MonoBehaviour
                 attackIndex = 0;
             }
 
-            Debug.LogWarning("连招" + attackCombo[attackIndex].animationTrigger);
 
             if (attackCombo[attackIndex] != null && attackCombo[attackIndex].animationTrigger.Length > 0)
             {
@@ -126,7 +123,6 @@ public class PlayerCombat : MonoBehaviour
         Collider2D[] colliders = Physics2D.OverlapBoxAll(new Vector2(center.x, center.y), new Vector2(size, size), 0, LayerMask.GetMask("enemy"));
         foreach (Collider2D collider in colliders)
         {
-            Debug.Log("hit " + collider.gameObject.name);
             // 对敌人造成伤害
             collider.gameObject.GetComponent<Charactor>().TakeDamage(gameObject, attack1Damage.damage);
         }

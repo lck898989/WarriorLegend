@@ -117,10 +117,8 @@ public class PlayerController : MonoBehaviour
         {
             isHurt = true;
             Charactor otherCha = other.GetComponent<Charactor>();
-            Debug.Log("碰到了敌人");
             // 英雄受到敌人的伤害
             charactor?.TakeDamage(other.gameObject, otherCha.attackInstance.damage);
-            Debug.Log("英雄的血量：" + charactor.Hp);
         }
     }
 
@@ -214,7 +212,6 @@ public class PlayerController : MonoBehaviour
         {
             this.rb.velocity = Vector2.zero;
             Vector2 force = this.bounceDirection * this.bounceForce;
-            Debug.Log("弹开方向：" + force);
 
             this.rb.AddForce(force, ForceMode2D.Impulse);
         }
@@ -232,7 +229,6 @@ public class PlayerController : MonoBehaviour
 
     public void playerDead(Transform attacker)
     {
-        Debug.Log("主角死亡");
         this.isDead = true;
         this.rb.velocity = Vector2.zero;
         this.playerInput.Disable();
@@ -263,7 +259,6 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     public void ResetAttack()
     {
-        Debug.Log("reset attack");
         this.isAttack = false;
     }
 }

@@ -32,7 +32,8 @@ public class Boar : Enemy
         {
             player = GameObject.FindGameObjectWithTag("player").transform;
         }
-        if (Vector2.Distance(player.position, transform.position) > attackDistance)
+        float distance = Vector3.Distance(player.position, transform.position);
+        if (distance > attackDistance)
         {
             return false;
         }
@@ -48,4 +49,5 @@ public class Boar : Enemy
         }
         return true;
     }
+
 }
