@@ -21,6 +21,7 @@ public class AttackState : BaseState
 
     public override void OnExitState()
     {
+        EnemyIns.animator.SetBool("run",false);
     }
 
     public override void OnLogicUpdate()

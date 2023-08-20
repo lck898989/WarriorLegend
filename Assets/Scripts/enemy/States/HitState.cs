@@ -21,6 +21,7 @@ public class HitState : BaseState
 
     public override void OnExitState()
     {
+        //EnemyIns.animator.ResetTrigger("hit");
     }
 
     public override void OnLogicUpdate()

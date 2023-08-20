@@ -18,7 +18,8 @@ public class RunState : BaseState
 
     public override void OnExitState()
     {
-
+        Animator animator = EnemyIns.animator;
+        animator.SetBool("run", false);
     }
 
     public override void OnLogicUpdate()

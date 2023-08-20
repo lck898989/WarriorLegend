@@ -28,6 +28,8 @@ public class Boar : Enemy
     public override bool IsInAttackRange()
     {
         Transform player = GameManager.Instance.legendGame.Player;
+        if (player.GetComponent<PlayerController>().isDead) return false;
+
         if (player == null)
         {
             player = GameObject.FindGameObjectWithTag("player").transform;

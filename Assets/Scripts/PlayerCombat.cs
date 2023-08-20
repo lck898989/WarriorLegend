@@ -30,7 +30,6 @@ public class PlayerCombat : MonoBehaviour
 
     public void combatEvent()
     {
-        Debug.LogWarning("state is " + charactorState.curState);
         if (charactorState.curState != UnitState.ATTACK)
         {
             // 是否在攻击窗口内

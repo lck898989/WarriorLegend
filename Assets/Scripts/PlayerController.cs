@@ -88,7 +88,6 @@ public class PlayerController : MonoBehaviour
         #region 走路事件
         this.playerInput.GamePlay.Move.started += (InputAction.CallbackContext ctx) =>
         {
-            Debug.Log("dir is " + inputDirection);
         };
         // 持续按走路键
         this.playerInput.GamePlay.Walk.performed += (InputAction.CallbackContext ctx) =>

@@ -27,6 +27,9 @@ public class Enemy : MonoBehaviour
         {
             if (_State != value)
             {
+                if (CurState != null) { 
+                    CurState.OnExitState();
+                }
                 _State = value;
                 switch (_State)
                 {
@@ -146,7 +149,7 @@ public class Enemy : MonoBehaviour
     public void Update()
     {
         CommonLogicUpdate();
-        Debug.Log("curState is " + CurState);
+        
         CurState?.OnLogicUpdate();
     }
 
@@ -187,7 +190,7 @@ public class Enemy : MonoBehaviour
             {
                 waitTimeCounter = 0;
             }
-            if (State != UnitState.PATROL)
+            if (!isHit && State != UnitState.PATROL)
                 State = UnitState.PATROL;
         }
 
@@ -209,7 +212,6 @@ public class Enemy : MonoBehaviour
 
     public void OnTakeDamage(Transform Attacker)
     {
-        Debug.Log("野猪受到攻击转向");
         if (Attacker.position.x - transform.position.x > 0)
         {
             transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
@@ -225,7 +227,7 @@ public class Enemy : MonoBehaviour
 
     private IEnumerator OnHit()
     {
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(0.5f);
         isHit = false;
         // 继续巡逻
         State = UnitState.PATROL;
@@ -239,11 +241,13 @@ public class Enemy : MonoBehaviour
     public void DeadDestroy()
     {
         Destroy(this.gameObject);
+        
     }
 
     public void FixedUpdate()
     {
         CommonFixedUpdate();
+        Debug.Log("curState is " + CurState);
         CurState?.OnPhysicsUpdate();
     }
 

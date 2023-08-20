@@ -18,7 +18,6 @@ public class PhysicsCheck : MonoBehaviour
     {
         this.rb = this.GetComponent<Rigidbody2D>();
         playerController = GetComponent<PlayerController>();
-        Debug.Log("PhysicsCheck Awake");
     }
 
     private void Update()
