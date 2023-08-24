@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TreeEditor;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Windows;
@@ -27,7 +28,8 @@ public class Enemy : MonoBehaviour
         {
             if (_State != value)
             {
-                if (CurState != null) { 
+                if (CurState != null)
+                {
                     CurState.OnExitState();
                 }
                 _State = value;
@@ -73,7 +75,9 @@ public class Enemy : MonoBehaviour
     public Dictionary<UnitState, BaseState> StateMap = new Dictionary<UnitState, BaseState>();
 
     public BaseState CurState;
+    [HideInInspector]
     public Rigidbody2D rb;
+    [HideInInspector]
     public Animator animator;
     /// <summary>
     /// 当前野猪的速度
@@ -88,6 +92,7 @@ public class Enemy : MonoBehaviour
     /// </summary>
     public float normalSpeed = 100f;
 
+    [Header("倒计时")]
     /// <summary>
     /// 等待时间
     /// </summary>
@@ -149,7 +154,7 @@ public class Enemy : MonoBehaviour
     public void Update()
     {
         CommonLogicUpdate();
-        
+
         CurState?.OnLogicUpdate();
     }
 
@@ -206,6 +211,7 @@ public class Enemy : MonoBehaviour
                 float targetX = -trs.localScale.x;
                 trs.localScale = new Vector3(targetX, trs.localScale.y, trs.localScale.z);
                 State = UnitState.PATROL;
+                Debug.Log("localScale x is " + trs.localScale);
             }
         }
     }
@@ -241,7 +247,7 @@ public class Enemy : MonoBehaviour
     public void DeadDestroy()
     {
         Destroy(this.gameObject);
-        
+
     }
 
     public void FixedUpdate()

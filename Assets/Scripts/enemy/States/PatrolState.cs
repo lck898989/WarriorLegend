@@ -14,11 +14,13 @@ public class PatrolState : BaseState
     }
     public override void OnEnterState()
     {
+        Debug.Log("进入巡逻状态");
         Animator animator = EnemyIns.animator;
 
         animator.SetBool("idle", false);
         animator.SetBool("walk", true);
         animator.SetBool("run", false);
+        EnemyIns.curSpeed = EnemyIns.normalSpeed;
     }
 
     public override void OnExitState()
@@ -30,7 +32,7 @@ public class PatrolState : BaseState
     public override void OnLogicUpdate()
     {
         // 持续检测是否进入攻击范围
-        if (EnemyIns.IsInAttackRange() && !GameManager.Instance.legendGame.Player.GetComponent<PlayerController>().isDead)
+        if (EnemyIns.IsInAttackRange())
         {
             Debug.Log("进入攻击范围");
             // 转向玩家

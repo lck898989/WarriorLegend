@@ -35,19 +35,9 @@ public class Boar : Enemy
             player = GameObject.FindGameObjectWithTag("player").transform;
         }
         float distance = Vector3.Distance(player.position, transform.position);
-        if (distance > attackDistance)
+        if (distance >= attackDistance)
         {
             return false;
-        }
-
-        // 转向
-        if (transform.position.x - player.position.x > 0)
-        {
-            transform.localScale = new Vector3(1, transform.localScale.y, transform.localScale.z);
-        }
-        if (transform.position.x - player.position.x < 0)
-        {
-            transform.localScale = new Vector3(-1, transform.localScale.y, transform.localScale.z);
         }
         return true;
     }

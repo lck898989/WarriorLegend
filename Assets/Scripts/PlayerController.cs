@@ -64,7 +64,6 @@ public class PlayerController : MonoBehaviour
 
     public void Awake()
     {
-
         this.rb = this.GetComponent<Rigidbody2D>();
         this.playerInput = new PlayerInput();
         this.pc = GetComponent<PhysicsCheck>();
@@ -144,6 +143,8 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (this.playerInput == null) return;
+
         this.inputDirection = this.playerInput.GamePlay.Move.ReadValue<Vector2>();
         InputAction jumpAction = this.playerInput.GamePlay.Jump;
     }
@@ -242,7 +243,6 @@ public class PlayerController : MonoBehaviour
         if (!this.pc.isGround) return;
         // 处理攻击事件
         playerCombat.combatEvent();
-
     }
 
     /// <summary>
